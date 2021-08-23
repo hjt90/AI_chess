@@ -1,11 +1,12 @@
 #include<iostream>
 #include<vector>
 #include<map>
+#include<algorithm>
 #include"../include/GetPossibility.h"
 using namespace std;
 
-/*fen¹æÔò
-r³µ nÂí bÏà aÊ¿ kË§ cÅÚ p±ø
+/*fenè§„åˆ™
+rè½¦ né©¬ bç›¸ aå£« kå¸… cç‚® på…µ
 */
 
 char whichside(char c)
@@ -18,15 +19,16 @@ char whichside(char c)
 		return 'r';
 }
 
-vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊıÊÇÆåÅÌ£¬µÚ¶ş¸ö²ÎÊıÊÇË­×ß£¨°´ÕÕfen¹æÔòbÊÇºÚrÊÇºì£©
+vector<string> getnodes(char(&board)[board_row][board_col], char side)//ä¸€ä¸ªå‚æ•°æ˜¯æ£‹ç›˜ï¼Œç¬¬äºŒä¸ªå‚æ•°æ˜¯è°èµ°ï¼ˆæŒ‰ç…§fenè§„åˆ™bæ˜¯é»‘ræ˜¯çº¢ï¼‰
 {
 	vector<string> result;
-	int i, j, k, q;//Ò»Ğ©Ëæ±ãµÄ¼ÆÊıÆ÷
-	string temp="0000";//ÏÈ·ÅÒ»¸ö»º´æ
-	//ÏÈ·ÅÒ»¸ö×ÖµäÀ´´æ´¢µ±Ç°Æå×ÓµÄ·ûºÅ
+	char otherside = side == 'r' ? 'b' : 'r';
+	int i, j, k;//ä¸€äº›éšä¾¿çš„è®¡æ•°å™¨
+	string temp = "0000";//å…ˆæ”¾ä¸€ä¸ªç¼“å­˜
+	//å…ˆæ”¾ä¸€ä¸ªå­—å…¸æ¥å­˜å‚¨å½“å‰æ£‹å­çš„ç¬¦å·
 	map<char, char> m;
-	//´æ·ÅÒ»Ğ©½çÏŞ
-	//¾Å¹¬¸ñ
+	//å­˜æ”¾ä¸€äº›ç•Œé™
+	//ä¹å®«æ ¼
 	int row91, row92, col91, col92;
 	if (side == 'b')
 	{
@@ -42,7 +44,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 		col91 = 3;
 		col92 = 5;
 	}
-	//°ë³¡
+	//åŠåœº
 	int halfrow1, halfrow2;
 	if (side == 'b')
 	{
@@ -75,52 +77,60 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 		m['c'] = 'C';
 		m['p'] = 'P';
 	}
-	//±éÀúÆåÅÌ
+	//éå†æ£‹ç›˜
 	for (i = 0; i < board_row; i++)
 	{
 		for (j = 0; j < board_col; j++)
 		{
-			//¶ÔÃ¿Ò»¸öÆåÅÌÎ»ÖÃ½øĞĞ·ÖÎö
-			if (whichside(board[i][j]) != side)//¿ÕµÄ»òÕßÊÇºìÉ«µÄ
+			//å¯¹æ¯ä¸€ä¸ªæ£‹ç›˜ä½ç½®è¿›è¡Œåˆ†æ
+			if (whichside(board[i][j]) != side)//ç©ºçš„æˆ–è€…æ˜¯çº¢è‰²çš„
 				;
-			else if (board[i][j] == m['r'])//ÊÇ³µ
+			else if (board[i][j] == m['r'])//æ˜¯è½¦
 			{
-				for (k = i + 1; k < board_row && whichside(board[k][j]) != side; k++)//ÕÒÍ¬Ò»ÁĞµÄ×ß·¨ (µ½±»×Ô¼ºµÄÆå×Ó¶Â×¡ÎªÖ¹£©
+				for (k = i + 1; k < board_row && whichside(board[k][j]) != side; k++)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
 					temp[2] = k + '0';
 					temp[3] = j + '0';
 					result.push_back(temp);
+					if (whichside(board[k][j]) == otherside)
+						break;
 				}
-				for (k = i - 1; k >= 0 && whichside(board[k][j]) != side; k--)//ÕÒÍ¬Ò»ÁĞµÄ×ß·¨ (µ½±»×Ô¼ºµÄÆå×Ó¶Â×¡ÎªÖ¹£©
+				for (k = i - 1; k >= 0 && whichside(board[k][j]) != side; k--)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
 					temp[2] = k + '0';
 					temp[3] = j + '0';
 					result.push_back(temp);
+					if (whichside(board[k][j]) == otherside)
+						break;
 				}
-				for (k = j + 1; k < board_col && whichside(board[i][k]) != side; k++)//ÕÒÍ¬Ò»ĞĞµÄ×ß·¨ 
+				for (k = j + 1; k < board_col && whichside(board[i][k]) != side; k++)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
 					temp[2] = i + '0';
 					temp[3] = k + '0';
 					result.push_back(temp);
+					if (whichside(board[i][k]) == otherside)
+						break;
 				}
-				for (k = j - 1; k >= 0 && whichside(board[i][k]) != side; k--)//ÕÒÍ¬Ò»ĞĞµÄ×ß·¨ 
+				for (k = j - 1; k >= 0 && whichside(board[i][k]) != side; k--)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
 					temp[2] = i + '0';
 					temp[3] = k + '0';
 					result.push_back(temp);
+					if (whichside(board[i][k]) == otherside)
+						break;
 				}
 			}
-			else if (board[i][j] == m['n'])//ÊÇÂí
+			else if (board[i][j] == m['n'])//æ˜¯é©¬
 			{
-				//ÏÈÅĞ¶ÏÉÏÏÂ×óÓÒÊÇ·ñ±ğÂí½Å£¬È»ºóÔÚ×ß
+				//å…ˆåˆ¤æ–­ä¸Šä¸‹å·¦å³æ˜¯å¦åˆ«é©¬è„šï¼Œç„¶ååœ¨èµ°
 				if (i + 1 < board_row && board[i + 1][j] == '\0')
 				{
 					if (i + 2 < board_row && j - 1 >= 0 && whichside(board[i + 2][j - 1]) != side)
@@ -178,7 +188,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 						result.push_back(temp);
 					}
 				}
-				if (j - 1 >= 0 && board[i][j + 1] == '\0')
+				if (j - 1 >= 0 && board[i][j - 1] == '\0')
 				{
 					if (i - 1 >= 0 && j - 2 >= 0 && whichside(board[i - 1][j - 2]) != side)
 					{
@@ -198,7 +208,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					}
 				}
 			}
-			else if (board[i][j] == m['b'])//ÊÇÏà
+			else if (board[i][j] == m['b'])//æ˜¯ç›¸
 			{
 				if (i + 1 <= halfrow2 && j + 1 < board_col && board[i + 1][j + 1] == '\0')
 				{
@@ -245,7 +255,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					}
 				}
 			}
-			else if (board[i][j] == m['a'])//ÊÇÊ¿
+			else if (board[i][j] == m['a'])//æ˜¯å£«
 			{
 				if (i + 1 <= row92 && j + 1 <= col92 && whichside(board[i + 1][j + 1]) != side)
 				{
@@ -280,13 +290,13 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					result.push_back(temp);
 				}
 			}
-			else if (board[i][j] == m['k'])//ÊÇË§
+			else if (board[i][j] == m['k'])//æ˜¯å¸…
 			{
-				//ÌØÊâÇé¿öÖ±½Ó¶Ô½«
+				//ç‰¹æ®Šæƒ…å†µç›´æ¥å¯¹å°†
 				int flag = 0;
 				if (side == 'b')
 				{
-					for (k = i - 1; k >= 0; k--)//Ò»Â·ÏòÏÂÈ¥ÕÒ¶ÔÃæµÄ½«
+					for (k = i - 1; k >= 0; k--)//ä¸€è·¯å‘ä¸‹å»æ‰¾å¯¹é¢çš„å°†
 					{
 						if (board[k][j] == 'K')
 						{
@@ -298,7 +308,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							break;
 						}
 					}
-					if (flag == 1)//ÄÜ¶Ô
+					if (flag == 1)//èƒ½å¯¹
 					{
 						temp[0] = i + '0';
 						temp[1] = j + '0';
@@ -309,7 +319,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 				}
 				else if (side == 'r')
 				{
-					for (k = i + 1; k < board_row; k++)//Ò»Â·ÏòÉÏ
+					for (k = i + 1; k < board_row; k++)//ä¸€è·¯å‘ä¸Š
 					{
 						if (board[k][j] == 'k')
 						{
@@ -321,7 +331,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							break;
 						}
 					}
-					if (flag == 1)//ÄÜ¶Ô
+					if (flag == 1)//èƒ½å¯¹
 					{
 						temp[0] = i + '0';
 						temp[1] = j + '0';
@@ -330,7 +340,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 						result.push_back(temp);
 					}
 				}
-				//ÆÕÍ¨Çé¿ö
+				//æ™®é€šæƒ…å†µ
 				if (i + 1 <= row92 && whichside(board[i + 1][j]) != side)
 				{
 					temp[0] = i + '0';
@@ -364,10 +374,10 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					result.push_back(temp);
 				}
 			}
-			else if (board[i][j] == m['c'])//ÊÇÅÚ
+			else if (board[i][j] == m['c'])//æ˜¯ç‚®
 			{
-				//ÅÚºÍ³µÂÔÓĞ²»Í¬
-				for (k = i + 1; k < board_row && board[k][j] == '\0'; k++)//ÕÒÍ¬Ò»ÁĞµÄ×ß·¨ (µ½±»×Ô¼ºµÄÆå×Ó¶Â×¡ÎªÖ¹£©
+				//ç‚®å’Œè½¦ç•¥æœ‰ä¸åŒ
+				for (k = i + 1; k < board_row && board[k][j] == '\0'; k++)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -375,28 +385,9 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					temp[3] = j + '0';
 					result.push_back(temp);
 				}
-				for (k = k + 1; k < board_row && board[k][j] == '\0'; k++)//ÕÒ¿ªÅÚµã
+				for (k = k + 1; k < board_row && board[k][j] == '\0'; k++)//æ‰¾å¼€ç‚®ç‚¹
 					;
-				if (k < board_row && whichside(board[k][j]) != side)//ÅĞ¶ÏÊÇ²»ÊÇÄÜ³ÔµÄ×Ó
-				{
-					temp[0] = i + '0';
-					temp[1] = j + '0';
-					temp[2] = k + '0';
-					temp[3] = j + '0';
-					result.push_back(temp);
-				}
-
-				for (k = i - 1; k >= 0 && board[k][j] == '\0'; k--)//ÕÒÍ¬Ò»ÁĞµÄ×ß·¨ (µ½±»×Ô¼ºµÄÆå×Ó¶Â×¡ÎªÖ¹£©
-				{
-					temp[0] = i + '0';
-					temp[1] = j + '0';
-					temp[2] = k + '0';
-					temp[3] = j + '0';
-					result.push_back(temp);
-				}
-				for (k = k - 1; k >= 0 && board[k][j] == '\0'; k--)//ÕÒ¿ªÅÚµã
-					;
-				if (k >= 0 && whichside(board[k][j]) != side)//ÅĞ¶ÏÊÇ²»ÊÇÄÜ³ÔµÄ×Ó
+				if (k < board_row && whichside(board[k][j]) != side)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -405,7 +396,26 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					result.push_back(temp);
 				}
 
-				for (k = j + 1; k < board_col && whichside(board[i][k]) != side; k++)//ÕÒÍ¬Ò»ĞĞµÄ×ß·¨ 
+				for (k = i - 1; k >= 0 && board[k][j] == '\0'; k--)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
+				{
+					temp[0] = i + '0';
+					temp[1] = j + '0';
+					temp[2] = k + '0';
+					temp[3] = j + '0';
+					result.push_back(temp);
+				}
+				for (k = k - 1; k >= 0 && board[k][j] == '\0'; k--)//æ‰¾å¼€ç‚®ç‚¹
+					;
+				if (k >= 0 && whichside(board[k][j]) != side)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
+				{
+					temp[0] = i + '0';
+					temp[1] = j + '0';
+					temp[2] = k + '0';
+					temp[3] = j + '0';
+					result.push_back(temp);
+				}
+
+				for (k = j + 1; k < board_col && board[i][k] == '\0'; k++)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -413,9 +423,9 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					temp[3] = k + '0';
 					result.push_back(temp);
 				}
-				for (k = k + 1; k < board_col && board[i][k] == '\0'; k++)//ÕÒ¿ªÅÚµã
+				for (k = k + 1; k < board_col && board[i][k] == '\0'; k++)//æ‰¾å¼€ç‚®ç‚¹
 					;
-				if (k < board_col && whichside(board[i][k]) != side)//ÅĞ¶ÏÊÇ²»ÊÇÄÜ³ÔµÄ×Ó
+				if (k < board_col && whichside(board[i][k]) != side)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -424,7 +434,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					result.push_back(temp);
 				}
 
-				for (k = j - 1; k >= 0 && whichside(board[i][k]) != side; k--)//ÕÒÍ¬Ò»ĞĞµÄ×ß·¨ 
+				for (k = j - 1; k >= 0 && board[i][k] == '\0'; k--)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -432,9 +442,9 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					temp[3] = k + '0';
 					result.push_back(temp);
 				}
-				for (k = k - 1; k >= 0 && board[i][k] == '\0'; k--)//ÕÒ¿ªÅÚµã
+				for (k = k - 1; k >= 0 && board[i][k] == '\0'; k--)//æ‰¾å¼€ç‚®ç‚¹
 					;
-				if (k >= 0 && whichside(board[i][k]) != side)//ÅĞ¶ÏÊÇ²»ÊÇÄÜ³ÔµÄ×Ó
+				if (k >= 0 && whichside(board[i][k]) != side)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
 				{
 					temp[0] = i + '0';
 					temp[1] = j + '0';
@@ -443,14 +453,14 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 					result.push_back(temp);
 				}
 			}
-			else if (board[i][j] == m['p'])//ÊÇ±ø
+			else if (board[i][j] == m['p'])//æ˜¯å…µ
 			{
-				//±ø±È½ÏÂé·³ĞèÒª·ÖÀàÌÖÂÛ
-				if (side == 'b')//ºÚÉ«·½ÏòÏÂ³å
+				//å…µæ¯”è¾ƒéº»çƒ¦éœ€è¦åˆ†ç±»è®¨è®º
+				if (side == 'b')//é»‘è‰²æ–¹å‘ä¸‹å†²
 				{
-					if (i >= 5)//Ã»¹ıºÓ
+					if (i >= 5)//æ²¡è¿‡æ²³
 					{
-						if (whichside(board[i - 1][j]) != side)//³å
+						if (whichside(board[i - 1][j]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -459,9 +469,9 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							result.push_back(temp);
 						}
 					}
-					else//¹ıºÓÁË
+					else//è¿‡æ²³äº†
 					{
-						if (i - 1 >= 0 && whichside(board[i - 1][j]) != side)//³å
+						if (i - 1 >= 0 && whichside(board[i - 1][j]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -469,7 +479,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							temp[3] = j + '0';
 							result.push_back(temp);
 						}
-						if (j - 1 >= 0 && whichside(board[i][j - 1]) != side)//³å
+						if (j - 1 >= 0 && whichside(board[i][j - 1]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -477,7 +487,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							temp[3] = j - 1 + '0';
 							result.push_back(temp);
 						}
-						if (j + 1 < board_col && whichside(board[i][j + 1]) != side)//³å
+						if (j + 1 < board_col && whichside(board[i][j + 1]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -487,11 +497,11 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 						}
 					}
 				}
-				else//ºìÉ«·½ÏòÉÏ³å
+				else//çº¢è‰²æ–¹å‘ä¸Šå†²
 				{
-					if (i <= 4)//Ã»¹ıºÓ
+					if (i <= 4)//æ²¡è¿‡æ²³
 					{
-						if (whichside(board[i + 1][j]) != side)//³å
+						if (whichside(board[i + 1][j]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -500,9 +510,9 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							result.push_back(temp);
 						}
 					}
-					else//¹ıºÓÁË
+					else//è¿‡æ²³äº†
 					{
-						if (i + 1 < board_row && whichside(board[i + 1][j]) != side)//³å
+						if (i + 1 < board_row && whichside(board[i + 1][j]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -510,7 +520,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							temp[3] = j + '0';
 							result.push_back(temp);
 						}
-						if (j - 1 >= 0 && whichside(board[i][j - 1]) != side)//³å
+						if (j - 1 >= 0 && whichside(board[i][j - 1]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -518,7 +528,7 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 							temp[3] = j - 1 + '0';
 							result.push_back(temp);
 						}
-						if (j + 1 < board_col && whichside(board[i][j + 1]) != side)//³å
+						if (j + 1 < board_col && whichside(board[i][j + 1]) != side)//å†²
 						{
 							temp[0] = i + '0';
 							temp[1] = j + '0';
@@ -535,16 +545,16 @@ vector<string> getnodes(char(&board)[board_row][board_col], char side)//Ò»¸ö²ÎÊı
 	return result;
 }
 
-//ÅĞ¶ÏÊäÓ®
-//¼òµ¥µØ´¦Àí£¬Ö»ÒªË­½«Ã»ÁËË­¾ÍÊäÁË
+//åˆ¤æ–­è¾“èµ¢
+//ç®€å•åœ°å¤„ç†ï¼Œåªè¦è°å°†æ²¡äº†è°å°±è¾“äº†
 char judge(char(&board)[board_row][board_col])
 {
 	int i, j;
-	int flag1,flag2;
-	//ÔÚºìÉ«·½ÕÒË§
+	int flag1, flag2;
+	//åœ¨çº¢è‰²æ–¹æ‰¾å¸…
 	flag1 = 0;
 	flag2 = 0;
-	for (i = 0; i <=2; i++)
+	for (i = 0; i <= 2; i++)
 	{
 		for (j = 3; j <= 5; j++)
 		{
@@ -552,13 +562,13 @@ char judge(char(&board)[board_row][board_col])
 			{
 				flag1 = 1;
 			}
-			else if ( board[i][j] == 'k')
+			else if (board[i][j] == 'k')
 			{
 				flag2 = 1;
 			}
 		}
 	}
-	//ÔÚºÚÉ«·½ÕÒË§
+	//åœ¨é»‘è‰²æ–¹æ‰¾å¸…
 	for (i = 7; i <= 9; i++)
 	{
 		for (j = 3; j <= 5; j++)
@@ -580,4 +590,909 @@ char judge(char(&board)[board_row][board_col])
 	else
 		return 'z';
 
+}
+
+bool check_basicborder(int i, int j, int i1, int j1, int row0, int col0, int row1, int col1)
+{
+
+	if (i<row0 || i>row1)
+		return false;
+	else if (i1<row0 || i1>row1)
+		return false;
+	else if (j<col0 || j>col1)
+		return false;
+	else if (j1<col0 || j1>col1)
+		return false;
+	else
+		return true;
+
+}
+
+/*fenè§„åˆ™
+rè½¦ né©¬ bç›¸ aå£« kå¸… cç‚® på…µ
+*/
+bool is_correct_step(string step, char(&board)[board_row][board_col])
+{
+	int i, j, i1, j1;//æå–ä½ç½®ä¿¡æ¯
+	i = step[0] - '0';
+	j = step[1] - '0';
+	i1 = step[2] - '0';
+	j1 = step[3] - '0';
+	char chara = board[step[0]][step[1]];//å…ˆæŠŠè¿™ä¸ªå­æ‰¾åˆ°
+	if (chara == '\0')//å¦‚æœç§»åŠ¨äº†ä¸€ä¸ªä¸å­˜åœ¨çš„æ£‹å­
+		return false;
+	char side = whichside(chara);//æ‰¾åˆ°è¿™æ˜¯å“ªä¸€æ–¹çš„å­
+	if (side == whichside(board[i1][j1]))//èµ·ç‚¹å’Œç»ˆç‚¹æ˜¯åŒä¸€æ–¹çš„å­ï¼Œæ˜¾ç„¶ä¹Ÿä¸è¡Œ
+		return false;
+	/*
+	-------------------------------
+	æ­¤å¤„å¯è‡ªè¡Œå¢åŠ åˆ¤å®šæ˜¯å¦æ˜¯æ­£ç¡®çš„èµ°å­æ–¹çš„æ£‹å­
+	-------------------------------
+	*/
+
+	int p;
+	//å…ˆæ”¾ä¸€ä¸ªå­—å…¸æ¥å­˜å‚¨å½“å‰æ£‹å­çš„ç¬¦å·
+	map<char, char> m;
+	//å­˜æ”¾ä¸€äº›ç•Œé™
+	//ä¹å®«æ ¼
+	int row91, row92, col91, col92;
+	if (side == 'b')
+	{
+		row91 = 7;
+		row92 = 9;
+		col91 = 3;
+		col92 = 5;
+	}
+	else
+	{
+		row91 = 0;
+		row92 = 2;
+		col91 = 3;
+		col92 = 5;
+	}
+	//åŠåœº
+	int halfrow1, halfrow2;
+	if (side == 'b')
+	{
+		halfrow1 = 5;
+		halfrow2 = 9;
+	}
+	else
+	{
+		halfrow1 = 0;
+		halfrow2 = 4;
+	}
+
+	if (side == 'b')
+	{
+		m['r'] = 'r';
+		m['n'] = 'n';
+		m['b'] = 'b';
+		m['a'] = 'a';
+		m['k'] = 'k';
+		m['c'] = 'c';
+		m['p'] = 'p';
+	}
+	else
+	{
+		m['r'] = 'R';
+		m['n'] = 'N';
+		m['b'] = 'B';
+		m['a'] = 'A';
+		m['k'] = 'K';
+		m['c'] = 'C';
+		m['p'] = 'P';
+	}
+	if (chara == m['r'])//æ˜¯è½¦
+	{
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, 0, 0, board_row, board_col) == false)
+			return false;
+		if (i == i1)//åŒä¸€è¡Œ
+		{
+			for (p = min(j, j1) + 1; p < max(j, j1); p++)
+			{
+				if (board[i][p] != '\0')
+					return false;
+			}
+			return true;
+		}
+		else if (j == j1)//åŒä¸€åˆ—
+		{
+			for (p = min(i, i1) + 1; p < max(i, i1); p++)
+			{
+				if (board[p][j] != '\0')
+					return false;
+			}
+			return true;
+		}
+		else
+			return false;
+	}
+	else if (chara == m['n'])//æ˜¯é©¬
+	{
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, 0, 0, board_row, board_col) == false)
+			return false;
+		//åˆ†åˆ«åˆ¤æ–­æƒ…å†µ
+		if ((i1 == i + 2 && j1 == j + 1) || (i1 == i + 2 && j1 == j - 1))
+		{
+			if (board[i + 1][j] != '\0')//è¹©é©¬è…¿
+				return false;
+			else
+				return true;
+		}
+		else if ((i1 == i - 2 && j1 == j + 1) || (i1 == i - 2 && j1 == j - 1))
+		{
+			if (board[i - 1][j] != '\0')//è¹©é©¬è…¿
+				return false;
+			else
+				return true;
+		}
+		else if ((i1 == i + 1 && j1 == j + 2) || (i1 == i - 1 && j1 == j + 2))
+		{
+			if (board[i][j + 1] != '\0')//è¹©é©¬è…¿
+				return false;
+			else
+				return true;
+		}
+		else if ((i1 == i + 1 && j1 == j - 2) || (i1 == i - 1 && j1 == j - 2))
+		{
+			if (board[i][j - 1] != '\0')//è¹©é©¬è…¿
+				return false;
+			else
+				return true;
+		}
+		else//æ ¹æœ¬å°±èµ°é”™äº†
+			return false;
+	}
+	else if (chara == m['b'])//æ˜¯ç›¸
+	{
+		if (check_basicborder(i, j, i1, j1, halfrow1, 0, halfrow2, board_col) == false)
+			return false;
+		//åˆ†åˆ«åˆ¤æ–­æƒ…å†µ
+		if (i1 == i + 2 && j1 == j + 2)
+		{
+			if (board[i + 1][j + 1] != '\0')
+				return false;
+			else
+				return true;
+		}
+		else if (i1 == i - 2 && j1 == j + 2)
+		{
+			if (board[i - 1][j + 1] != '\0')
+				return false;
+			else
+				return true;
+		}
+		else if (i1 == i + 2 && j1 == j - 2)
+		{
+			if (board[i + 1][j - 1] != '\0')
+				return false;
+			else
+				return true;
+		}
+		else if (i1 == i - 2 && j1 == j - 2)
+		{
+			if (board[i - 1][j - 1] != '\0')
+				return false;
+			else
+				return true;
+		}
+		else
+			return false;//å‹æ ¹å°±æ²¡èµ°å¯¹
+	}
+	else if (chara == m['a'])//æ˜¯å£«
+	{
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, row91, col91, row92, col92) == false)
+			return false;
+		//æ²¡èµ°å¯¹
+		if (abs(i1 - i) != 1 && abs(j1 - j) != 1)
+			return false;
+		return true;
+	}
+	else if (chara == m['k'])//æ˜¯å¸…
+	{
+		char otherking = side == 'r' ? 'k' : 'K';
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, 0, 0, board_row, board_col) == false)
+			return false;
+		if (board[i1][j1] != otherking)
+		{
+			if (check_basicborder(i, j, i1, j1, row91, col91, row92, col92) == false)
+				return false;
+		}
+
+		if (abs(i1 - i) == 1)
+		{
+			if (j1 == j)
+				return true;
+		}
+		else if (abs(j1 - j) == 1)
+		{
+			if (i1 == i)
+				return true;
+		}
+		else
+		{
+			if (board[i1][j1] == otherking)
+			{
+				for (p = min(i, i1) + 1; p < max(i, i1); p++)
+				{
+					if (board[p][j] != '\0')
+						return false;
+				}
+				return true;
+			}
+			return false;//èµ°é”™äº†
+		}
+
+	}
+	else if (chara == m['c'])//èµ°ç‚®
+	{
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, 0, 0, board_row, board_col) == false)
+			return false;
+		if (board[i1][j1] == '\0')//ä¸å¼€ç‚®çš„æƒ…å†µ
+		{
+			if (i == i1)//åŒä¸€è¡Œ
+			{
+				for (p = min(j, j1) + 1; p < max(j, j1); p++)
+				{
+					if (board[i][p] != '\0')
+						return false;
+				}
+				return true;
+			}
+			else if (j == j1)//åŒä¸€åˆ—
+			{
+				for (p = min(i, i1) + 1; p < max(i, i1); p++)
+				{
+					if (board[p][j] != '\0')
+						return false;
+				}
+				return true;
+			}
+			else
+				return false;
+		}
+		else//å¼€ç‚®çš„æƒ…å†µ
+		{
+			int count = 0;
+			if (i == i1)//åŒä¸€è¡Œ
+			{
+				for (p = min(j, j1) + 1; p < max(j, j1); p++)
+				{
+					if (board[i][p] == '\0')
+						;
+					else//è·³æ¿
+						count++;
+				}
+				if (count == 1)
+					return true;
+				else
+					return false;
+			}
+			else if (j == j1)//åŒä¸€åˆ—
+			{
+				for (p = min(i, i1) + 1; p < max(i, i1); p++)
+				{
+					if (board[p][j] == '\0')
+						;
+					else//è·³æ¿
+						count++;
+				}
+				if (count == 1)
+					return true;
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+	}
+	else if (chara == m['p'])
+	{
+		//è¶Šç•Œ
+		if (check_basicborder(i, j, i1, j1, 0, 0, board_row, board_col) == false)
+			return false;
+		//å…µéœ€è¦åˆ†ç±»è®¨è®º
+		if (side == 'b')//é»‘è‰²æ–¹å‘ä¸‹å†²
+		{
+			if (i >= 5)//æ²¡è¿‡æ²³
+			{
+				if (i1 == i - 1 && j1 == j)
+					return true;
+				else
+					return false;
+			}
+			else//è¿‡æ²³äº†
+			{
+				if ((i1 == i - 1 && j1 == j) || (i1 == i && j1 == j + 1) || (i1 == i && j1 == j - 1))
+					return true;
+				else
+					return false;
+			}
+		}
+		else//çº¢è‰²æ–¹å‘ä¸Šå†²
+		{
+			if (i <= 4)//æ²¡è¿‡æ²³
+			{
+				if (i1 == i + 1 && j1 == j)
+					return true;
+				else
+					return false;
+			}
+			else//è¿‡æ²³äº†
+			{
+				if ((i1 == i + 1 && j1 == j) || (i1 == i && j1 == j + 1) || (i1 == i && j1 == j - 1))
+					return true;
+				else
+					return false;
+			}
+		}
+	}
+	else
+		return false;
+}
+
+vector<chess_info> get_chess_info(char(&board)[board_row][board_col])//ä¸€ä¸ªå‚æ•°æ˜¯æ£‹ç›˜
+{
+	vector<chess_info> infolist;
+	int i, j, k;//ä¸€äº›éšä¾¿çš„è®¡æ•°å™¨
+	chess_info temp;
+	//å­˜æ”¾ä¸€äº›ç•Œé™
+	//ä¹å®«æ ¼
+	int row91, row92, col91, col92;
+	//åŠåœº
+	int halfrow1, halfrow2;
+	//ä¸€äº›ç¼“å­˜
+	char side, otherside;
+	char tempside;
+	//éå†æ£‹ç›˜
+	for (i = 0; i < board_row; i++)
+	{
+		for (j = 0; j < board_col; j++)
+		{
+			side = whichside(board[i][j]);
+			if (board[i][j] == '\0')//ç©ºçš„
+				continue;
+			otherside = side == 'r' ? 'b' : 'r';
+			//è§„å®šè¾¹ç•Œ
+			if (side == 'b')
+			{
+				row91 = 7;
+				row92 = 9;
+				col91 = 3;
+				col92 = 5;
+			}
+			else
+			{
+				row91 = 0;
+				row92 = 2;
+				col91 = 3;
+				col92 = 5;
+			}
+			if (side == 'b')
+			{
+				halfrow1 = 5;
+				halfrow2 = 9;
+			}
+			else
+			{
+				halfrow1 = 0;
+				halfrow2 = 4;
+			}
+			//æ¸…ç©ºtemp
+			temp.row = i;
+			temp.col = j;
+			temp.attack.clear();
+			temp.protection = 0;
+			temp.movecount = 0;
+			//å¯¹æ¯ä¸€ä¸ªæ£‹ç›˜ä½ç½®è¿›è¡Œåˆ†æ
+			if (board[i][j] == 'r' || board[i][j] == 'R')//æ˜¯è½¦
+			{
+				for (k = i + 1; k < board_row && whichside(board[k][j]) != side; k++)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
+				{
+					if (whichside(board[k][j]) == otherside)//åƒå­
+					{
+						temp.attack.push_back(board[k][j]);
+						break;
+					}
+					else
+						temp.movecount++;
+				}
+				if (k < board_row && whichside(board[k][j]) == side)
+					temp.protection++;
+
+				for (k = i - 1; k >= 0 && whichside(board[k][j]) != side; k--)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
+				{
+					if (whichside(board[k][j]) == otherside)//åƒå­
+					{
+						temp.attack.push_back(board[k][j]);
+						break;
+					}
+					else
+						temp.movecount++;
+				}
+				if (k >= 0 && whichside(board[k][j]) == side)
+					temp.protection++;
+
+				for (k = j + 1; k < board_col && whichside(board[i][k]) != side; k++)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
+				{
+					if (whichside(board[i][k]) == otherside)//åƒå­
+					{
+						temp.attack.push_back(board[i][k]);
+						break;
+					}
+					else
+						temp.movecount++;
+				}
+				if (k < board_col && whichside(board[i][k]) == side)
+					temp.protection++;
+
+				for (k = j - 1; k >= 0 && whichside(board[i][k]) != side; k--)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
+				{
+					if (whichside(board[i][k]) == otherside)//åƒå­
+					{
+						temp.attack.push_back(board[i][k]);
+						break;
+					}
+					else
+						temp.movecount++;
+				}
+				if (k >= 0 && whichside(board[i][k]) == side)
+					temp.protection++;
+			}
+			else if (board[i][j] == 'n' || board[i][j] == 'N')//æ˜¯é©¬
+			{
+				//å…ˆåˆ¤æ–­ä¸Šä¸‹å·¦å³æ˜¯å¦åˆ«é©¬è„šï¼Œç„¶ååœ¨èµ°
+				if (i + 1 < board_row && board[i + 1][j] == '\0')
+				{
+					if (i + 2 < board_row && j - 1 >= 0)
+					{
+						tempside = whichside(board[i + 2][j - 1]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 2][j - 1]);
+						else
+							temp.movecount++;
+					}
+					if (i + 2 < board_row && j + 1 < board_col)
+					{
+						tempside = whichside(board[i + 2][j + 1]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 2][j + 1]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (i - 1 >= 0 && board[i - 1][j] == '\0')
+				{
+					if (i - 2 >= 0 && j - 1 >= 0)
+					{
+						tempside = whichside(board[i - 2][j - 1]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 2][j - 1]);
+						else
+							temp.movecount++;
+					}
+					if (i - 2 >= 0 && j + 1 < board_col)
+					{
+						tempside = whichside(board[i - 2][j + 1]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 2][j + 1]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (j + 1 < board_row && board[i][j + 1] == '\0')
+				{
+					if (i - 1 >= 0 && j + 2 < board_col)
+					{
+						tempside = whichside(board[i - 1][j + 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 1][j + 2]);
+						else
+							temp.movecount++;
+					}
+					if (i + 1 < board_row && j + 2 < board_col)
+					{
+						tempside = whichside(board[i + 1][j + 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 1][j + 2]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (j - 1 >= 0 && board[i][j - 1] == '\0')
+				{
+					if (i - 1 >= 0 && j - 2 >= 0)
+					{
+						tempside = whichside(board[i - 1][j - 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 1][j - 2]);
+						else
+							temp.movecount++;
+					}
+					if (i + 1 < board_row && j - 2 >= 0)
+					{
+						tempside = whichside(board[i + 1][j - 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 1][j - 2]);
+						else
+							temp.movecount++;
+					}
+				}
+			}
+			else if (board[i][j] == 'b' || board[i][j] == 'B')//æ˜¯ç›¸
+			{
+				if (i + 1 <= halfrow2 && j + 1 < board_col && board[i + 1][j + 1] == '\0')
+				{
+					if (i + 2 <= halfrow2 && j + 2 < board_col)
+					{
+						tempside = whichside(board[i + 2][j + 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 2][j + 2]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (i + 1 <= halfrow2 && j - 1 >= 0 && board[i + 1][j - 1] == '\0')
+				{
+					if (i + 2 <= halfrow2 && j - 2 >= 0)
+					{
+						tempside = whichside(board[i + 2][j - 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 2][j - 2]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (i - 1 >= halfrow1 && j + 1 < board_col && board[i - 1][j + 1] == '\0')
+				{
+					if (i - 2 >= halfrow1 && j + 2 < board_col)
+					{
+						tempside = whichside(board[i - 2][j + 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 2][j + 2]);
+						else
+							temp.movecount++;
+					}
+				}
+				if (i - 1 >= halfrow1 && j - 1 >= 0 && board[i - 1][j - 1] == '\0')
+				{
+					if (i - 2 >= halfrow1 && j - 2 >= 0)
+					{
+						tempside = whichside(board[i - 2][j - 2]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 2][j - 2]);
+						else
+							temp.movecount++;
+					}
+				}
+			}
+			else if (board[i][j] == 'a' || board[i][j] == 'A')//æ˜¯å£«
+			{
+				if (i + 1 <= row92 && j + 1 <= col92)
+				{
+					tempside = whichside(board[i + 1][j + 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i + 1][j + 1]);
+					else
+						temp.movecount++;
+				}
+				if (i + 1 <= row92 && j - 1 >= col91)
+				{
+					tempside = whichside(board[i + 1][j - 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i + 1][j - 1]);
+					else
+						temp.movecount++;
+				}
+				if (i - 1 >= row91 && j + 1 <= col92)
+				{
+					tempside = whichside(board[i - 1][j + 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i - 1][j + 1]);
+					else
+						temp.movecount++;
+				}
+				if (i - 1 >= row91 && j - 1 >= col91)
+				{
+					tempside = whichside(board[i - 1][j - 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i - 1][j - 1]);
+					else
+						temp.movecount++;
+				}
+			}
+			else if (board[i][j] == 'k' || board[i][j] == 'K')//æ˜¯å¸…
+			{
+				//ç‰¹æ®Šæƒ…å†µç›´æ¥å¯¹å°†
+				int flag = 0;
+				if (side == 'b')
+				{
+					for (k = i - 1; k >= 0; k--)//ä¸€è·¯å‘ä¸‹å»æ‰¾å¯¹é¢çš„å°†
+					{
+						if (board[k][j] == 'K')
+						{
+							flag = 1;
+							break;
+						}
+						else if (board[k][j] != '\0')
+						{
+							break;
+						}
+					}
+					if (flag == 1)//èƒ½å¯¹
+					{
+						temp.attack.push_back('K');
+					}
+				}
+				else if (side == 'r')
+				{
+					for (k = i + 1; k < board_row; k++)//ä¸€è·¯å‘ä¸Š
+					{
+						if (board[k][j] == 'k')
+						{
+							flag = 1;
+							break;
+						}
+						else if (board[k][j] != '\0')
+						{
+							break;
+						}
+					}
+					if (flag == 1)//èƒ½å¯¹
+					{
+						temp.attack.push_back('k');
+					}
+				}
+				//æ™®é€šæƒ…å†µ
+				if (i + 1 <= row92)
+				{
+					tempside = whichside(board[i + 1][j]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i + 1][j]);
+					else
+						temp.movecount++;
+				}
+				if (i - 1 >= row91)
+				{
+					tempside = whichside(board[i - 1][j]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i - 1][j]);
+					else
+						temp.movecount++;
+				}
+				if (j + 1 <= col92)
+				{
+					tempside = whichside(board[i][j + 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i][j + 1]);
+					else
+						temp.movecount++;
+				}
+				if (j - 1 >= col91)
+				{
+					tempside = whichside(board[i][j - 1]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i][j - 1]);
+					else
+						temp.movecount++;
+				}
+			}
+			else if (board[i][j] == 'c' || board[i][j] == 'C')//æ˜¯ç‚®
+			{
+				//ç‚®å’Œè½¦ç•¥æœ‰ä¸åŒ
+				for (k = i + 1; k < board_row && board[k][j] == '\0'; k++)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
+				{
+					temp.movecount++;
+				}
+				for (k = k + 1; k < board_row && board[k][j] == '\0'; k++)//æ‰¾å¼€ç‚®ç‚¹
+					;
+				if (k < board_row)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
+				{
+					tempside = whichside(board[k][j]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[k][j]);
+					else
+						temp.movecount++;
+				}
+
+				for (k = i - 1; k >= 0 && board[k][j] == '\0'; k--)//æ‰¾åŒä¸€åˆ—çš„èµ°æ³• (åˆ°è¢«è‡ªå·±çš„æ£‹å­å µä½ä¸ºæ­¢ï¼‰
+				{
+					temp.movecount++;
+				}
+				for (k = k - 1; k >= 0 && board[k][j] == '\0'; k--)//æ‰¾å¼€ç‚®ç‚¹
+					;
+				if (k >= 0)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
+				{
+					tempside = whichside(board[k][j]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[k][j]);
+					else
+						temp.movecount++;
+				}
+
+				for (k = j + 1; k < board_col && board[i][k] == '\0'; k++)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
+				{
+					temp.movecount++;
+				}
+				for (k = k + 1; k < board_col && board[i][k] == '\0'; k++)//æ‰¾å¼€ç‚®ç‚¹
+					;
+				if (k < board_col)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
+				{
+					tempside = whichside(board[i][k]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i][k]);
+					else
+						temp.movecount++;
+				}
+
+				for (k = j - 1; k >= 0 && board[i][k] == '\0'; k--)//æ‰¾åŒä¸€è¡Œçš„èµ°æ³• 
+				{
+					temp.movecount++;
+				}
+				for (k = k - 1; k >= 0 && board[i][k] == '\0'; k--)//æ‰¾å¼€ç‚®ç‚¹
+					;
+				if (k >= 0)//åˆ¤æ–­æ˜¯ä¸æ˜¯èƒ½åƒçš„å­
+				{
+					tempside = whichside(board[i][k]);
+					if (tempside == side)
+						temp.protection++;
+					else if (tempside == otherside)
+						temp.attack.push_back(board[i][k]);
+					else
+						temp.movecount++;
+				}
+			}
+			else if (board[i][j] == 'p' || board[i][j] == 'P')//æ˜¯å…µ
+			{
+				//å…µæ¯”è¾ƒéº»çƒ¦éœ€è¦åˆ†ç±»è®¨è®º
+				if (side == 'b')//é»‘è‰²æ–¹å‘ä¸‹å†²
+				{
+					if (i >= 5)//æ²¡è¿‡æ²³
+					{
+						tempside = whichside(board[i - 1][j]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i - 1][j]);
+						else
+							temp.movecount++;
+					}
+					else//è¿‡æ²³äº†
+					{
+						if (i - 1 >= 0)//å†²
+						{
+							tempside = whichside(board[i - 1][j]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i - 1][j]);
+							else
+								temp.movecount++;
+						}
+						if (j - 1 >= 0)//å†²
+						{
+							tempside = whichside(board[i][j - 1]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i][j - 1]);
+							else
+								temp.movecount++;
+						}
+						if (j + 1 < board_col)//å†²
+						{
+							tempside = whichside(board[i][j + 1]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i][j + 1]);
+							else
+								temp.movecount++;
+						}
+					}
+				}
+				else//çº¢è‰²æ–¹å‘ä¸Šå†²
+				{
+					if (i <= 4)//æ²¡è¿‡æ²³
+					{
+						tempside = whichside(board[i + 1][j]);
+						if (tempside == side)
+							temp.protection++;
+						else if (tempside == otherside)
+							temp.attack.push_back(board[i + 1][j]);
+						else
+							temp.movecount++;
+					}
+					else//è¿‡æ²³äº†
+					{
+						if (i + 1 < board_row)//å†²
+						{
+							tempside = whichside(board[i + 1][j]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i + 1][j]);
+							else
+								temp.movecount++;
+						}
+						if (j - 1 >= 0)//å†²
+						{
+							tempside = whichside(board[i][j - 1]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i][j - 1]);
+							else
+								temp.movecount++;
+						}
+						if (j + 1 < board_col)//å†²
+						{
+							tempside = whichside(board[i][j + 1]);
+							if (tempside == side)
+								temp.protection++;
+							else if (tempside == otherside)
+								temp.attack.push_back(board[i][j + 1]);
+							else
+								temp.movecount++;
+						}
+					}
+				}
+
+			}
+			infolist.push_back(temp);
+		}
+	}
+	return infolist;
 }
